@@ -59,7 +59,7 @@ input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(31,
 <article class="card">
 <div class="title"><b>1</b><div><h2>Dados e Tabela 2026-2027</h2><p>Preenche automaticamente com base na sua tabela.</p></div></div>
 <div class="two">
-<label style="grid-column:1/-1">Período da Locação
+<label style="grid-column:1/-1"><span>Período da Locação</span>
   <select id="periodo">
     <option value="set_nov">Setembro a 30/11/26 (Mín. 3 diárias)</option>
     <option value="dez_1">01/12/26 a 18/12/26</option>
@@ -70,15 +70,17 @@ input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(31,
     <option value="pascoa">Páscoa (25/03 a 28/03/27 - Mín. 3 diárias)</option>
   </select>
 </label>
-<label style="grid-column:1/-1">Tipologia da Unidade
+<label style="grid-column:1/-1"><span>Tipologia da Unidade</span>
   <select id="bedrooms">
     <option value="0">01 Quarto + 1wc (Com 1 Ar Split) - Casal+2 Crianças</option>
     <option value="1">02 Quartos + 2wc (3 Ventiladores) - Até 6 pessoas</option>
     <option value="2">02 Quartos + 2wc (Com 2 Ar Split) - Até 6 pessoas</option>
   </select>
 </label>
-<label><span id="days-label">Diárias Solicitadas</span><input id="days" type="number" min="1"></label>
-<label>Hóspedes (Max <span id="max-hosp">4</span>)<input id="people" type="number" min="1" max="4"></label>
+<label><span>Diárias Solicitadas</span><input id="days" type="number" min="1"></label>
+
+<!-- A correção do layout (span unificado) está nesta linha abaixo: -->
+<label><span>Hóspedes (Max <span id="max-hosp">4</span>)</span><input id="people" type="number" min="1" max="4"></label>
 </div>
 </article>
 
@@ -91,7 +93,7 @@ input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(31,
 <article class="card">
 <div class="title"><b>3</b><div><h2>Canal de Venda</h2><p>Taxas de plataformas descontam do seu lucro final.</p></div></div>
 <div class="channels" id="channels"></div>
-<label class="fee">Taxa/comissão (%) <span><input id="fee" type="number" min="0" max="99">%</span></label>
+<label class="fee"><span>Taxa/comissão (%)</span> <span><input id="fee" type="number" min="0" max="99">%</span></label>
 </article>
 </div>
 
@@ -271,8 +273,7 @@ function calculate() {
       let np = nf * (state.fee / 100);
       let nl = nf - np - totalCustos;
       
-      // Update quick fields inside breakdown (this is a simplified live update)
-      calculate(); // recursive call to refresh DOM structure smoothly since it's local
+      calculate(); 
     };
     descInput.focus(); // keep focus if user is typing
   }
