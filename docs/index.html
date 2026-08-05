@@ -123,7 +123,7 @@ window.saveReserva = async function (reserva) {
 <footer>Resultado indicativo para apoiar sua decisão. Confirme impostos e taxas aplicáveis antes de fechar a locação.</footer>
 
 <script>
-const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}),labels={fixo:'por locação',dia:'por dia',pessoa:'por pessoa','pessoa-dia':'por pessoa/dia'},preset={stay:[['Limpeza',150,'fixo'],['Lavanderia',60,'fixo'],['Energia, água e gás',3,'dia'],['Rateio de custos fixos',2,'dia'],['Jardinagem',5,'dia'],['Diária mínima pessoa',80,'pessoa-dia'],['Depreciação geral',65,'dia']]};
+const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}),labels={fixo:'por locação',dia:'por dia',pessoa:'por pessoa','pessoa-dia':'por pessoa/dia'},preset={stay:[['Limpeza',150,'fixo'],['Lavanderia',20,'fixo'],['Energia, água e gás',3,'dia'],['Rateio de custos fixos',2,'dia'],['Jardinagem',5,'dia'],['Diária mínima pessoa',80,'pessoa-dia'],['Depreciação geral',24,'dia']]};
 /* MUDANÇA: Quantidade de pessoas padrão alterada de 4 para 2 na inicialização */
 let state={people:2,days:6,bedrooms:1,margin:30,fee:0,channel:'Direto',costs:[],openInfo:null,clientName:'',clientPhone:'',notes:''};
 
