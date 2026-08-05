@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Precificação Interna - Residencial da Torre</title>
+<style>
+:root{--ink:#17342d;--muted:#6d7c77;--green:#1f5a49;--dark:#153f34;--mint:#eaf4ef;--cream:#f6f2e8;--paper:#fffefb;--line:#dce4df;--accent:#d9904a}*{box-sizing:border-box}body{margin:0;background:#f7f8f4;color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+header{align-items:center;background:#6b4226;border-bottom:1px solid #4f2f1b;display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:space-between;padding:14px 24px;position:sticky;top:0;width:100%;z-index:10}
+.brand{align-items:center;display:flex;font-family:Georgia,serif;font-size:20px;font-weight:700;gap:10px;color:#fff}
+.header-actions{display:flex;gap:20px;align-items:center}.link{background:none;border:0;color:#f0c99e;font-size:14px;font-weight:700;padding:0}
+.workspace{align-items:start;display:grid;gap:28px;grid-template-columns:minmax(0,1.45fr) minmax(256px,.64fr);margin:auto;max-width:1180px;padding:24px}
+.forms{display:grid;gap:18px}
+.card{background:var(--paper);border:1px solid rgba(31,90,73,.12);border-radius:20px;box-shadow:0 16px 45px rgba(23,52,45,.06);padding:21px}
+.title{align-items:center;display:flex;gap:14px;margin-bottom:22px}
+.title>b{align-items:center;background:var(--mint);border-radius:50%;color:var(--green);display:flex;flex:0 0 34px;height:34px;justify-content:center}
+.title h2{font-family:Georgia,serif;font-size:23px;margin:0 0 4px}.title p{color:var(--muted);font-size:14px;margin:0}
+.two{display:grid;gap:16px;grid-template-columns:1fr 1fr}label{color:#435b54;display:grid;font-size:13px;font-weight:700;gap:8px}
+input,select{background:#fff;border:1px solid #ced9d3;border-radius:10px;color:var(--ink);min-width:0;outline:0;padding:12px}
+input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(31,90,73,.1)}.two input,.two select{font-size:16px;font-weight:700}
+.costs{display:grid;gap:10px}.cost{display:grid;gap:8px;grid-template-columns:minmax(130px,1.2fr) 110px 145px 115px 34px}
+.costGroup{display:grid;gap:8px}.nameWrap{position:relative}.name{font-weight:650;width:100%}
+.money{align-items:center;border:1px solid #ced9d3;border-radius:10px;display:flex;overflow:hidden}.money span{color:var(--muted);padding-left:10px}.money input{border:0;box-shadow:none;padding-left:6px;width:100%}
+.lineTotal{align-items:flex-end;background:var(--mint);border-radius:10px;display:grid;gap:2px;padding:7px 10px}.lineTotal small{color:var(--muted);font-size:10px}.lineTotal strong{color:var(--green);font-size:14px}
+.remove{background:none;border:0;color:#9b6b5e;font-size:22px}
+.add{background:none;border:1px dashed #9cb4aa;border-radius:10px;color:var(--green);font-weight:750;margin-top:14px;padding:12px;width:100%}
+.total{align-items:center;background:var(--cream);border-radius:12px;display:flex;justify-content:space-between;margin-top:16px;padding:14px 16px}.total span{color:var(--muted);font-size:14px}
+.channels{display:grid;gap:10px;grid-template-columns:repeat(3,1fr);margin-top:20px}.channels button{background:#fff;border:1px solid #ced9d3;border-radius:12px;color:var(--ink);display:grid;gap:4px;padding:13px 8px}.channels .selected{background:var(--mint);border-color:var(--green);color:var(--dark)}.channels small{color:var(--muted)}
+.fee{align-items:center;display:flex;justify-content:space-between;margin-top:16px}.fee span{align-items:center;display:flex;gap:6px}.fee input{padding:8px;width:70px}
+.result{background:var(--dark);color:#fff;position:sticky;top:96px;border-radius:16px;box-shadow:0 16px 45px rgba(23,52,45,.06);padding:21px}
+.result>small{color:#ebba7f;font-size:10px}
+.price{font-family:Georgia,serif;font-size:clamp(33px,4vw,46px);letter-spacing:-.04em;line-height:1;margin-top:10px}
+.context{color:#bcd0c9;font-size:11px;line-height:1.5;margin:10px 0 19px}
+.units{border-bottom:1px solid #ffffff24;border-top:1px solid #ffffff24;display:grid;grid-template-columns:1fr 1fr;padding:16px 0}
+.units div{display:grid;gap:4px}.units div+div{border-left:1px solid #ffffff24;padding-left:18px}
+.units span,.breakdown span,.minimum span{color:#a9c0b8;font-size:10px}
+.breakdown{display:grid;gap:10px;padding:18px 0;font-size:13px}.breakdown div{display:flex;justify-content:space-between}
+.profit{border-top:1px dashed #ffffff30;padding-top:11px}.profit strong{color:#4ade80;font-size:18px}
+.privacy{color:#9bb4ab;font-size:11px;line-height:1.5;margin:14px 0 0;text-align:center}
+.warning{background:#d9904a2b;border:1px solid #ebba7f80;border-radius:10px;line-height:1.6;padding:13px;font-size:13px; color:#ffddb0; margin-bottom:15px;}
+.discount-field{background:#ffffff14;border:1px dashed #ffffff30;border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+.discount-field input{background:none; border:none; color:#fff; font-size:18px; text-align:right; font-weight:bold; width:100px; padding:0;}
+.discount-field input:focus{box-shadow:none;}
+@media(max-width:860px){.workspace{grid-template-columns:1fr}.result{position:static}}
+@media(max-width:620px){.two,.channels{grid-template-columns:1fr}.cost{display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line);padding-bottom:14px}.cost select{width:100%}.remove{align-self:flex-end}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="brand">Residencial da Torre - Calculadora</div>
+<div class="header-actions">
+  <button class="link" id="reset">Zerar & Nova Consulta</button>
+</div>
+</header>
+
+<section class="workspace">
+<div class="forms">
+<article class="card">
+<div class="title"><b>1</b><div><h2>Dados e Tabela 2026-2027</h2><p>Preenche automaticamente com base na sua tabela.</p></div></div>
+<div class="two">
+<label style="grid-column:1/-1">Período da Locação
+  <select id="periodo">
+    <option value="set_nov">Setembro a 30/11/26 (Mín. 3 diárias)</option>
+    <option value="dez_1">01/12/26 a 18/12/26</option>
+    <option value="dez_2">18/12/26 a 04/02/27 (Exceto Ano Novo)</option>
+    <option value="anonovo">ANO NOVO (Pcte 10 dias - 23/12 a 05/01)</option>
+    <option value="carnaval">CARNAVAL (Mín. 4 diárias - 05/02 a 10/02/27)</option>
+    <option value="pos_car">10/02/27 em diante (Exceto Páscoa)</option>
+    <option value="pascoa">Páscoa (25/03 a 28/03/27 - Mín. 3 diárias)</option>
+  </select>
+</label>
+<label style="grid-column:1/-1">Tipologia da Unidade
+  <select id="bedrooms">
+    <option value="0">01 Quarto + 1wc (Com 1 Ar Split) - Casal+2 Crianças</option>
+    <option value="1">02 Quartos + 2wc (3 Ventiladores) - Até 6 pessoas</option>
+    <option value="2">02 Quartos + 2wc (Com 2 Ar Split) - Até 6 pessoas</option>
+  </select>
+</label>
+<label><span id="days-label">Diárias Solicitadas</span><input id="days" type="number" min="1"></label>
+<label>Hóspedes (Max <span id="max-hosp">4</span>)<input id="people" type="number" min="1" max="4"></label>
+</div>
+</article>
+
+<article class="card">
+<div class="title"><b>2</b><div><h2>Custos Variáveis</h2><p>Ajuste caso haja algo extra nesta reserva.</p></div><button class="add" id="add">+ Custo Extra</button></div>
+<div class="costs" id="costs"></div>
+<div class="total"><span>Soma dos Custos Operacionais</span><strong id="total"></strong></div>
+</article>
+
+<article class="card">
+<div class="title"><b>3</b><div><h2>Canal de Venda</h2><p>Taxas de plataformas descontam do seu lucro final.</p></div></div>
+<div class="channels" id="channels"></div>
+<label class="fee">Taxa/comissão (%) <span><input id="fee" type="number" min="0" max="99">%</span></label>
+</article>
+</div>
+
+<aside class="result" id="result"></aside>
+</section>
+
+<script>
+const money = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+// DADOS DA TABELA DA IMAGEM
+const tabela = {
+  set_nov: { min: 3, precos: [255, 295, 325], pcte: false },
+  dez_1: { min: 1, precos: [305, 425, 455], pcte: false },
+  dez_2: { min: 1, precos: [460, 599, 630], pcte: false },
+  anonovo: { min: 10, precos: [5340, 6830, 7330], pcte: true },
+  carnaval: { min: 4, precos: [540, 680, 710], pcte: false },
+  pos_car: { min: 1, precos: [280, 325, 355], pcte: false },
+  pascoa: { min: 3, precos: [350, 430, 460], pcte: false }
+};
+
+let state = {
+  periodo: 'set_nov', 
+  tipo: 0, // 0 = 1Q+Ar, 1 = 2Q+Vent, 2 = 2Q+Ar
+  days: 3, 
+  people: 2, 
+  fee: 0, 
+  channel: 'Direto',
+  descontoFinal: 0,
+  costs: []
+};
+
+const $ = id => document.getElementById(id);
+
+// Configura os custos padrão dependendo do quarto
+function loadDefaultCosts() {
+  const taxaLimpeza = state.tipo === 0 ? 150 : 200;
+  
+  let custosPadrao = [
+    { id: 1, name: 'Taxa de Limpeza', value: taxaLimpeza, unit: 'fixo' },
+    { id: 2, name: 'Lavanderia', value: state.tipo === 0 ? 20 : 30, unit: 'fixo' },
+    { id: 3, name: 'Água e Gás', value: 4, unit: 'pessoa-dia' }
+  ];
+
+  if (state.tipo === 0) {
+    custosPadrao.push({ id: 4, name: 'Energia (1 Ar Split)', value: 8, unit: 'pessoa-dia' });
+  } else if (state.tipo === 1) {
+    custosPadrao.push({ id: 4, name: 'Energia (Ventiladores)', value: 3, unit: 'pessoa-dia' });
+  } else if (state.tipo === 2) {
+    custosPadrao.push({ id: 4, name: 'Energia (2 Ar Split)', value: 12, unit: 'pessoa-dia' });
+  }
+  
+  state.costs = custosPadrao;
+}
+
+function line(c) {
+  return c.value * (c.unit === 'dia' ? state.days : c.unit === 'pessoa' ? state.people : c.unit === 'pessoa-dia' ? state.people * state.days : 1);
+}
+
+function renderCosts() {
+  const labels = { fixo: 'Fixa', dia: 'Por dia', pessoa: 'Por pessoa', 'pessoa-dia': 'Pessoa/Dia' };
+  $('costs').innerHTML = state.costs.map(c => `
+    <div class="costGroup">
+      <div class="cost" data-id="${c.id}">
+        <div class="nameWrap"><input class="name" value="${c.name}"></div>
+        <div class="money"><span>R$</span><input class="value" type="number" step=".01" value="${c.value}"></div>
+        <select class="unit">${Object.entries(labels).map(([v, t]) => `<option value="${v}" ${v === c.unit ? 'selected' : ''}>${t}</option>`).join('')}</select>
+        <div class="lineTotal"><small>Custo Gasto</small><strong>${money.format(line(c))}</strong></div>
+        <button class="remove">×</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.cost').forEach(row => {
+    const c = state.costs.find(x => x.id == row.dataset.id);
+    row.querySelector('.name').oninput = e => c.name = e.target.value;
+    row.querySelector('.value').oninput = e => { c.value = Math.max(0, +e.target.value); calculate(); };
+    row.querySelector('.unit').onchange = e => { c.unit = e.target.value; calculate(); };
+    row.querySelector('.remove').onclick = () => { state.costs = state.costs.filter(x => x !== c); renderCosts(); calculate(); };
+  });
+}
+
+function renderChannels() {
+  $('channels').innerHTML = [['Direto', 0], ['Airbnb', 15], ['Booking', 18]].map(([n, f]) => `
+    <button data-name="${n}" data-fee="${f}" class="${state.channel === n ? 'selected' : ''}"><strong>${n}</strong><small>${f}% de taxa</small></button>
+  `).join('');
+  $('channels').querySelectorAll('button').forEach(b => b.onclick = () => {
+    state.channel = b.dataset.name; state.fee = +b.dataset.fee; $('fee').value = state.fee; renderChannels(); calculate();
+  });
+}
+
+function applyRules() {
+  const regras = tabela[state.periodo];
+  const maxPessoas = state.tipo === 0 ? 4 : 6;
+  $('max-hosp').textContent = maxPessoas;
+  $('people').max = maxPessoas;
+  
+  if(state.people > maxPessoas) state.people = maxPessoas;
+  
+  if (regras.pcte) {
+    state.days = regras.min;
+    $('days').disabled = true;
+  } else {
+    $('days').disabled = false;
+    if(state.days < regras.min) state.days = regras.min;
+  }
+  
+  $('days').value = state.days;
+  $('people').value = state.people;
+  
+  loadDefaultCosts();
+  renderCosts();
+  calculate();
+}
+
+function calculate() {
+  const regras = tabela[state.periodo];
+  let tarifaBase = regras.precos[state.tipo];
+  
+  // Se for pacote, a tarifa base já é o total. Se não, multiplica pelos dias.
+  let valorTabelaTotal = regras.pcte ? tarifaBase : (tarifaBase * state.days);
+  
+  // Somar custos operacionais
+  document.querySelectorAll('.cost').forEach(row => {
+    const c = state.costs.find(x => x.id == row.dataset.id);
+    if(c) row.querySelector('.lineTotal strong').textContent = money.format(line(c));
+  });
+  
+  const totalCustos = state.costs.reduce((s, c) => s + line(c), 0);
+  $('total').textContent = money.format(totalCustos);
+
+  // Calcula descontos e taxas
+  let precoFinal = valorTabelaTotal - state.descontoFinal;
+  let plataformaFee = precoFinal * (state.fee / 100);
+  let receitaLiquida = precoFinal - plataformaFee;
+  let lucroReal = receitaLiquida - totalCustos;
+
+  let avisos = '';
+  if(!regras.pcte && state.days < regras.min) {
+    avisos = `<div class="warning">⚠️ Atenção: Este período exige mínimo de ${regras.min} diárias na tabela.</div>`;
+  }
+  if(regras.pcte) {
+    avisos = `<div class="warning">⭐ Pacote Fechado: Valor calculado para ${regras.min} dias corridos independentemente.</div>`;
+  }
+
+  $('result').innerHTML = `
+    <small>RESUMO DA LOCAÇÃO (TABELA OFICIAL)</small>
+    ${avisos}
+    <div class="price">${money.format(precoFinal)}</div>
+    <p class="context">para ${state.people} pessoas · ${state.days} dias · ${state.channel}</p>
+    
+    <div class="discount-field">
+      <span>Conceder Desconto (R$):</span>
+      <input type="number" id="inputDesconto" value="${state.descontoFinal}" min="0">
+    </div>
+
+    <div class="breakdown">
+      <div><span>Valor Base da Tabela</span><strong>${money.format(valorTabelaTotal)}</strong></div>
+      <div><span>Desconto Aplicado</span><strong>− ${money.format(state.descontoFinal)}</strong></div>
+      <div style="border-top:1px solid #ffffff30; padding-top:8px;">
+        <span>Comissão ${state.channel} (${state.fee}%)</span><strong style="color:#f6c9bd">− ${money.format(plataformaFee)}</strong>
+      </div>
+      <div><span>Custos Operacionais</span><strong style="color:#f6c9bd">− ${money.format(totalCustos)}</strong></div>
+      
+      <div class="profit" style="margin-top:10px;">
+        <span>💰 LUCRO REAL NO BOLSO</span><strong>${money.format(lucroReal)}</strong>
+      </div>
+    </div>
+    <p class="privacy">Dica: Adicione crianças de colo na contagem de hóspedes. Não aceitamos PETs.</p>
+  `;
+
+  const descInput = $('inputDesconto');
+  if(descInput) {
+    descInput.oninput = e => {
+      state.descontoFinal = Number(e.target.value) || 0;
+      // Atualiza os cálculos visualmente sem recarregar tudo
+      let nf = valorTabelaTotal - state.descontoFinal;
+      let np = nf * (state.fee / 100);
+      let nl = nf - np - totalCustos;
+      
+      // Update quick fields inside breakdown (this is a simplified live update)
+      calculate(); // recursive call to refresh DOM structure smoothly since it's local
+    };
+    descInput.focus(); // keep focus if user is typing
+  }
+}
+
+// Event Listeners
+$('periodo').onchange = e => { state.periodo = e.target.value; state.descontoFinal = 0; applyRules(); };
+$('bedrooms').onchange = e => { state.tipo = parseInt(e.target.value); applyRules(); };
+$('days').oninput = e => { state.days = Math.max(1, +e.target.value); calculate(); };
+$('people').oninput = e => { state.people = Math.max(1, +e.target.value); calculate(); };
+$('fee').oninput = e => { state.fee = Math.max(0, +e.target.value); calculate(); };
+$('add').onclick = () => { state.costs.push({ id: Date.now(), name: 'Custo Extra', value: 0, unit: 'fixo' }); renderCosts(); calculate(); };
+
+$('reset').onclick = () => {
+  state.periodo = 'set_nov'; $('periodo').value = 'set_nov';
+  state.tipo = 0; $('bedrooms').value = '0';
+  state.descontoFinal = 0;
+  state.channel = 'Direto'; state.fee = 0; $('fee').value = '0';
+  applyRules();
+};
+
+// Initialize
+renderChannels();
+applyRules();
+</script>
+</body>
+</html>
