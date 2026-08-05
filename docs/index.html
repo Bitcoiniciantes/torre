@@ -99,7 +99,7 @@ window.saveReserva = async function (reserva) {
 <div class="two">
 <label>Quantos quartos<select id="bedrooms"><option value="1">1 quarto</option><option value="2">2 quartos</option></select></label>
 <label><span id="days-label">Quantidade de diárias</span><input id="days" type="number" min="0"></label>
-<label>Quantidade de pessoas<input id="people" type="number" min="0" max="6"></label>
+<label>Quantidade de pessoas<input id="people" type="number" min="0" max="4"></label>
 <label>Telefone para contato<input id="clientPhone" type="tel" placeholder="(00) 0000-0000"></label>
 <label style="grid-column:1/-1">Nome do cliente<input id="clientName" type="text" placeholder="Nome completo"></label>
 </div>
@@ -123,101 +123,21 @@ window.saveReserva = async function (reserva) {
 <footer>Resultado indicativo para apoiar sua decisão. Confirme impostos e taxas aplicáveis antes de fechar a locação.</footer>
 
 <script>
-const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}),labels={fixo:'por locação',dia:'por dia',pessoa:'por pessoa','pessoa-dia':'por pessoa/dia'};
-
-const presets={
-  1:[
-    ['Limpeza',150,'fixo'],
-    ['Lavanderia',20,'fixo'],
-    ['Energia, água e gás',9.06,'pessoa-dia'],
-    ['Rateio de custos fixos',10,'fixo'],
-    ['Depreciação geral',24,'dia'],
-    ['Ar Condicionado 12kBTUs',19.85,'dia']
-  ],
-  2:[
-    ['Limpeza',180,'fixo'],
-    ['Lavanderia',30,'fixo'],
-    ['Energia, água e gás',10,'pessoa-dia'],
-    ['Rateio de custos fixos',15,'fixo'],
-    ['Depreciação geral',35,'dia']
-  ]
-};
-
+const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}),labels={fixo:'por locação',dia:'por dia',pessoa:'por pessoa','pessoa-dia':'por pessoa/dia'},preset={stay:[['Limpeza',150,'fixo'],['Lavanderia',20,'fixo'],['Energia, água e gás',3,'dia'],['Rateio de custos fixos',2,'dia'],['Jardinagem',5,'dia'],['Diária mínima pessoa',80,'pessoa-dia'],['Depreciação geral',24,'dia']]};
+/* MUDANÇA: Quantidade de pessoas padrão alterada de 4 para 2 na inicialização */
 let state={people:2,days:6,bedrooms:1,margin:30,fee:0,channel:'Direto',costs:[],openInfo:null,clientName:'',clientPhone:'',notes:''};
 
-const clone=(bed=state.bedrooms)=>presets[bed].map((x,i)=>({id:Date.now()+i,name:x[0],value:x[1],unit:x[2],info:x[0].includes('Rateio')?'rateio':x[0].includes('Depreciação')?'depreciacao':null}));
+const $=id=>document.getElementById(id),clone=()=>preset.stay.map((x,i)=>({id:Date.now()+i,name:x[0],value:x[1],unit:x[2],info:i===3?'rateio':i===6?'depreciacao':null}));
 function line(c){return c.value*(c.unit==='dia'?state.days:c.unit==='pessoa'?state.people:c.unit==='pessoa-dia'?state.people*state.days:1)}
 function multiplier(c){return c.unit==='pessoa'?`${state.people} pessoas`:c.unit==='dia'?`${state.days} dias`:c.unit==='pessoa-dia'?`${state.people} pessoas × ${state.days} dias`:'1 locação'}
 function renderCosts(){$('costs').innerHTML=state.costs.map(c=>`<div class="costGroup"><div class="cost" data-id="${c.id}"><div class="nameWrap"><input class="name" aria-label="Nome do custo" value="${c.name.replaceAll('&','&amp;').replaceAll('"','&quot;')}">${c.info?`<button class="infoButton ${c.info}" aria-label="Explicar ${c.name}">i</button>`:''}</div><div class="money"><span>R$</span><input class="value" type="number" min="0" step=".01" value="${c.value}"></div><select class="unit">${Object.entries(labels).map(([v,t])=>`<option value="${v}" ${v===c.unit?'selected':''}>${t}</option>`).join('')}</select><div class="lineTotal"><small>Total</small><strong>${money.format(line(c))}</strong></div><button class="remove" aria-label="Excluir custo">×</button></div>${state.openInfo===c.id?`<div class="costDetails ${c.info}"><strong>${c.info==='depreciacao'?'O que entra em Depreciação geral?':c.info==='consumo'?'O que entra em Consumo e estrutura?':'Como funciona o Rateio de custos fixos?'}</strong><p>${c.info==='depreciacao'?'Cobre o desgaste de móveis, eletrodomésticos e da estrutura predial com o uso ao longo do tempo.':c.info==='consumo'?'Pode incluir água, energia, gás, descartáveis, materiais de higiene, limpeza e desgaste de equipamentos.':'Distribui despesas como IPTU, internet, seguro e manutenção preventiva entre as locações.'} Cálculo atual: ${money.format(c.value)} × ${multiplier(c)} = <b>${money.format(line(c))}</b>.</p></div>`:''}</div>`).join('');document.querySelectorAll('.cost').forEach(row=>{const c=state.costs.find(x=>x.id==row.dataset.id);row.querySelector('.name').oninput=e=>c.name=e.target.value;row.querySelector('.value').oninput=e=>{c.value=Math.max(0,+e.target.value);calculate()};row.querySelector('.unit').onchange=e=>{c.unit=e.target.value;calculate()};const info=row.querySelector('.infoButton');if(info)info.onclick=()=>{state.openInfo=state.openInfo===c.id?null:c.id;renderCosts();calculate()};row.querySelector('.remove').onclick=()=>{state.costs=state.costs.filter(x=>x!==c);render()}})}
 function renderChannels(){$('channels').innerHTML=[['Direto',0],['Airbnb',15],['Booking',18]].map(([n,f])=>`<button data-name="${n}" data-fee="${f}" class="${state.channel===n?'selected':''}"><strong>${n}</strong><small>${f}% de taxa</small></button>`).join('');$('channels').querySelectorAll('button').forEach(b=>b.onclick=()=>{state.channel=b.dataset.name;state.fee=+b.dataset.fee;$('fee').value=state.fee;renderChannels();calculate()})}
-
-function calculate(){
-  document.querySelectorAll('.cost').forEach(row=>{
-    const c=state.costs.find(x=>x.id==row.dataset.id);
-    if(c)row.querySelector('.lineTotal strong').textContent=money.format(line(c));
-  });
-  const total=state.costs.reduce((s,c)=>s+line(c),0);
-  const factor=1-state.margin/100-state.fee/100;
-  const price=factor>0?total/factor:0;
-  const platform=price*state.fee/100;
-  const profit=price-platform-total;
-  const minimum=state.fee<100?total/(1-state.fee/100):0;
-  
-  $('total').textContent=money.format(total);
-  $('margin-text').textContent=state.margin+'%';
-
-  let resultHTML='<small>PREÇO SUGERIDO</small>';
-  if(factor<=0){
-    resultHTML+='<p class="warning">A soma da margem e da comissão precisa ser menor que 100%.</p>';
-  }else{
-    resultHTML+=`
-      <div class="price">${money.format(price)}</div>
-      <p class="context">para ${state.people} ${state.people===1?'pessoa':'pessoas'} · ${state.days} ${state.days===1?'dia':'dias'} · ${state.bedrooms} ${state.bedrooms===1?'quarto':'quartos'} · ${state.channel}</p>
-      <div class="units">
-        <div><span>Por dia</span><strong>${money.format(state.days?price/state.days:0)}</strong></div>
-        <div><span>Por pessoa</span><strong>${money.format(state.people?price/state.people:0)}</strong></div>
-      </div>
-      <div class="breakdown">
-        <div><span>Custos</span><strong>${money.format(total)}</strong></div>
-        <div><span>Taxa de ${state.fee}%</span><strong>− ${money.format(platform)}</strong></div>
-        <div class="profit"><span>Seu lucro projetado</span><strong>${money.format(profit)}</strong></div>
-      </div>
-      <div class="minimum"><span>Preço mínimo para não ter prejuízo</span><strong>${money.format(minimum)}</strong></div>
-      <label class="notesLabel">Observações
-        <textarea id="notes" rows="4" maxlength="250" placeholder="Anotações sobre esta reserva...">${state.notes.replaceAll('&','&amp;').replaceAll('<','&lt;')}</textarea>
-        <small class="notesCount">${state.notes.length}/250</small>
-      </label>
-      <button class="rentedBtn" id="rentedBtn" onclick="handleRented()">Para Alugar - salve está reserva</button>
-      <p class="privacy" id="rentedMsg">Clique no botão para salvar.</p>
-    `;
-  }
-  $('result').innerHTML=resultHTML;
-
-  const notesEl=$('notes');
-  if(notesEl){
-    notesEl.oninput=e=>{
-      state.notes=e.target.value;
-      const c=notesEl.parentElement.querySelector('.notesCount');
-      if(c)c.textContent=state.notes.length+'/250';
-    }
-  }
-}
-
+function calculate(){document.querySelectorAll('.cost').forEach(row=>{const c=state.costs.find(x=>x.id==row.dataset.id);if(c)row.querySelector('.lineTotal strong').textContent=money.format(line(c))});const total=state.costs.reduce((s,c)=>s+line(c),0),factor=1-state.margin/100-state.fee/100,price=factor>0?total/factor:0,platform=price*state.fee/100,profit=price-platform-total,minimum=state.fee<100?total/(1-state.fee/100):0;$('total').textContent=money.format(total);$('margin-text').textContent=state.margin+'%';$('result').innerHTML=`<small>PREÇO SUGERIDO</small>${factor<=0?'<p class="warning">A soma da margem e da comissão precisa ser menor que 100%.</p>':`<div class="price">${money.format(price)}</div><p class="context">para ${state.people} ${state.people===1?'pessoa':'pessoas'} · ${state.days} ${state.days===1?'dia':'dias'} · ${state.bedrooms} ${state.bedrooms===1?'quarto':'quartos'} · ${state.channel}</p><div class="units"><div><span>Por dia</span><strong>${money.format(state.days?price/state.days:0)}</strong></div><div><span>Por pessoa</span><strong>${money.format(state.people?price/state.people:0)}</strong></div></div><div class="breakdown"><div><span>Custos</span><strong>${money.format(total)}</strong></div><div><span>Taxa de ${state.fee}%</span><strong>− ${money.format(platform)}</strong></div><div class="profit"><span>Seu lucro projetado</span><strong>${money.format(profit)}</strong></div></div><div class="minimum"><span>Preço mínimo para não ter prejuízo</span><strong>${money.format(minimum)}</strong></div><label class="notesLabel">Observações<textarea id="notes" rows="4" maxlength="250" placeholder="Anotações sobre esta reserva...">${state.notes.replaceAll('&','&amp;').replaceAll('<','&lt;')}</textarea><small class="notesCount">${state.notes.length}/250</small></label><button class="rentedBtn" id="rentedBtn" onclick="handleRented()">Para Alugar - salve está reserva</button><p class="privacy" id="rentedMsg">Clique no botão para salvar.</p>`}`;const notesEl=$('notes');if(notesEl)notesEl.oninput=e=>{state.notes=e.target.value;const c=notesEl.parentElement.querySelector('.notesCount');if(c)c.textContent=state.notes.length+'/250'}}
 function render(){$('people').value=state.people;$('people').max=state.bedrooms===1?4:6;$('days').value=state.days;$('bedrooms').value=state.bedrooms;$('margin').value=state.margin;$('fee').value=state.fee;$('clientName').value=state.clientName;$('clientPhone').value=state.clientPhone;renderCosts();renderChannels();calculate()}
-$('people').oninput=e=>{const max=state.bedrooms===1?4:6,v=Math.min(max,Math.max(0,+e.target.value));state.people=v;if(+e.target.value>max)e.target.value=v;calculate()};$('days').oninput=e=>{state.days=Math.max(0,+e.target.value);calculate()};
+$('people').oninput=e=>{const max=state.bedrooms===1?4:6,v=Math.min(max,Math.max(0,+e.target.value));state.people=v;if(+e.target.value>max)e.target.value=v;calculate()};$('days').oninput=e=>{state.days=Math.max(0,+e.target.value);calculate()};$('bedrooms').onchange=e=>{state.bedrooms=+e.target.value;const max=state.bedrooms===1?4:6;$('people').max=max;if(state.people>max){state.people=max}render()};$('margin').oninput=e=>{state.margin=+e.target.value;calculate()};$('fee').oninput=e=>{state.fee=Math.max(0,+e.target.value);calculate()};$('clientName').oninput=e=>state.clientName=e.target.value;$('clientPhone').oninput=e=>{let v=e.target.value.replace(/\D/g,'').slice(0,10);if(v.length>6)v=v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');else if(v.length>2)v=v.replace(/(\d{2})(\d{0,4})/,'($1) $2');else if(v.length>0)v='('+v;e.target.value=v;state.clientPhone=v};$('add').onclick=()=>{state.costs.push({id:Date.now(),name:'Novo custo',value:0,unit:'fixo'});render()};
 
-$('bedrooms').onchange=e=>{
-  state.bedrooms=+e.target.value;
-  const max=state.bedrooms===1?4:6;
-  $('people').max=max;
-  if(state.people>max){state.people=max}
-  state.costs=clone(state.bedrooms);
-  render();
-};
-
-$('margin').oninput=e=>{state.margin=+e.target.value;calculate()};$('fee').oninput=e=>{state.fee=Math.max(0,+e.target.value);calculate()};$('clientName').oninput=e=>state.clientName=e.target.value;$('clientPhone').oninput=e=>{let v=e.target.value.replace(/\D/g,'').slice(0,10);if(v.length>6)v=v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');else if(v.length>2)v=v.replace(/(\d{2})(\d{0,4})/,'($1) $2');else if(v.length>0)v='('+v;e.target.value=v;state.clientPhone=v};$('add').onclick=()=>{state.costs.push({id:Date.now(),name:'Novo custo',value:0,unit:'fixo'});render()};
-
-$('newCalc').onclick=()=>{state.people=2;state.days=6;state.bedrooms=1;state.margin=30;state.fee=0;state.channel='Direto';state.openInfo=null;state.costs=clone(1);state.clientName='';state.clientPhone='';state.notes='';$('clientName').value='';$('clientPhone').value='';render()};
+/* MUDANÇA: O botão Novo Cálculo também redefine a quantidade de pessoas para 2 */
+$('newCalc').onclick=()=>{state.people=2;state.days=6;state.bedrooms=1;state.margin=30;state.fee=0;state.channel='Direto';state.openInfo=null;state.costs=clone();state.clientName='';state.clientPhone='';state.notes='';$('clientName').value='';$('clientPhone').value='';render()};
 
 $('reset').onclick=()=>{state.people=0;state.days=0;state.bedrooms=1;state.margin=0;state.fee=0;state.channel='Direto';state.openInfo=null;state.costs=state.costs.map(c=>({...c,value:0}));state.clientName='';state.clientPhone='';state.notes='';$('clientName').value='';$('clientPhone').value='';render()};
 
@@ -237,7 +157,7 @@ window.handleRented=async function(){
   }
 };
 
-state.costs=clone(1);render();
+state.costs=clone();render();
 </script>
 </body>
 </html>
